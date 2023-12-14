@@ -75,8 +75,7 @@ def add_ds_str(ds_num):
     if ds_num[0:2] != 'ds':
         ds_num = 'ds' + ds_num
     if len(ds_num) != 7:
-        print("'" + ds_num + "' is not valid.")
-        sys.exit()
+        sys.exit("'" + ds_num + "' is not valid.")
     return ds_num
 
 def get_userinfo():
@@ -213,7 +212,7 @@ def get_parser():
 def check_status(ret, token_file=DEFAULT_AUTH_FILE):
     """Checks that status of return object.
 
-    Exits if a 401 status code.
+    Exits if a 400 or 500 series status code.
 
     Args:
         ret (response.Response): Response of a request.
@@ -222,9 +221,8 @@ def check_status(ret, token_file=DEFAULT_AUTH_FILE):
     Returns:
         None
     """
-    if ret.status_code == 401: # Not Authorized
-        print(ret.content)
-        exit(1)
+    if ret.status_code >= 400:
+        sys.exit(ret.text)
 
 def check_file_status(filepath, filesize):
     """Prints file download status as percent of file complete.
@@ -518,8 +516,7 @@ def write_control_file_template(ds, write_location='./'):
 
     template_filename = write_location + add_ds_str(ds) + '_control.ctl'
     if os.path.exists(template_filename):
-        print(template_filename + " already exists.\nExiting")
-        exit(1)
+        sys.exit(template_filename + " already exists.\nExiting")
     with open(template_filename, 'w') as fh:
         fh.write(control_str)
 
